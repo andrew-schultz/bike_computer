@@ -1,0 +1,32 @@
+{
+    "devices": [
+        {
+            "device": "BikeSpeed",
+            "id": 46816,
+            "serial": 4294967295,
+            "transmission_type": 17,
+            "type": 123
+        },
+        {
+            "device": "BikeCadence",
+            "id": 32428,
+            "serial": 4294967295,
+            "transmission_type": 49,
+            "type": 122
+        },
+        {
+            "device": "HeartRate",
+            "id": 14713,
+            "serial": 4294967295,
+            "transmission_type": 1,
+            "type": 120
+        },
+        {
+            "device": "Unknown",
+            "id": 40362,
+            "serial": 4294967295,
+            "transmission_type": 78,
+            "type": 70
+        }
+    ]
+}

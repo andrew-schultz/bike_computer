@@ -1,0 +1,9 @@
+### App & Local Server
+* Install Python 3 if you don't already have it
+* Create a python3 virtual environment
+    * Run `pyenv virtualenv myenv`
+    * Activate the environment: `pyenv activate myenv`
+    * you may need to install usbutils: `brew install usbutil`
+    * In your new venv, run `pip3 install --upgrade pip && pip3 install -r requirements.txt`
+    * To run program: `python ant_service.py`
+

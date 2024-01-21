@@ -1,0 +1,5 @@
+# git+https://github.com/SamyCookie/python-ant
+# git+https://github.com/andrew-schultz/python-ant
+# ../python-ant
+pubnub >= 7.3.2
+openant >= 1.3.1
