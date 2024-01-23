@@ -15,7 +15,7 @@ from pubnub.pubnub import PubNub, SubscribeCallback
 from pubnub.exceptions import PubNubException
 
 
-def writeToCsv(service, callback):
+def writeToCsv(service):
     speed_fields = ['timestamp', 'speed', 'distance'] 
     cadence_fields = ['timestamp', 'cadence']
     heart_rate_fields = ['timestamp', 'heart_rate']
@@ -25,22 +25,29 @@ def writeToCsv(service, callback):
     with open(f'./public/{file_key}_speed.csv', 'w', newline='') as file: 
         writer = csv.DictWriter(file, fieldnames = speed_fields)
         writer.writeheader() 
-        for row in service.recorded_data_speed:
-            writer.writerow({'timestamp': row['timestamp'], 'speed': row['speed'], 'distance': row['distance']})
+        if service.recorded_data_speed:
+            for row in service.recorded_data_speed:
+                speed = row['speed'] if row['speed'] else '0'
+                distance = row['distance'] if row['distance'] else '0'
+                writer.writerow({'timestamp': row['timestamp'], 'speed': speed, 'distance': distance})
 
     with open(f'./public/{file_key}_cadence.csv', 'w', newline='') as file: 
         writer = csv.DictWriter(file, fieldnames = cadence_fields)
         writer.writeheader() 
-        for row in service.recorded_data_cadence:
-            writer.writerow({'timestamp': row['timestamp'], 'cadence': row['cadence']})
+        if service.recorded_data_cadence:
+            for row in service.recorded_data_cadence:
+                cadence = row['cadence'] if row['cadence'] else '0'
+                writer.writerow({'timestamp': row['timestamp'], 'cadence': cadence})
 
     with open(f'./public/{file_key}_heart_rate.csv', 'w', newline='') as file: 
         writer = csv.DictWriter(file, fieldnames = heart_rate_fields)
         writer.writeheader() 
-        for row in service.recorded_data_heart_rate:
-            writer.writerow({'timestamp': row['timestamp'], 'heart_rate': row['heart_rate']})
+        if service.recorded_data_heart_rate:
+            for row in service.recorded_data_heart_rate:
+                heart_rate = row['heart_rate'] if row['heart_rate'] else '0'
+                writer.writerow({'timestamp': row['timestamp'], 'heart_rate': heart_rate})
 
-    callback(file_key)
+    return file_key
 
 
 class GeneralService:
@@ -120,11 +127,10 @@ def auto_scanner(file_path=None, device_id=0, device_type=0, auto_create=False):
     pubnub.add_listener(SubscribeHandler())
 
 
-
     def handleRecordStop():
         file_key = writeToCsv(local_service)
         data_dict = {
-            'uuid': file_key,
+            'uuid': str(file_key),
             'action': 'statsReady'
         }
 
