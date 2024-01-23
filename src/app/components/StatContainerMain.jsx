@@ -29,8 +29,6 @@ const StatContainerMain = ({}) => {
     useEffect(() => {
         const pubnub = PubNubService(handleMessage)
         setPubnub(pubnub)
-        var uu = '47f87357-5134-4eea-8dbd-243e914a4026';
-        setUuid(uu)
     }, [])
 
     // stuff here about updating the values passed in to each StatContainer component?

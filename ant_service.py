@@ -20,34 +20,37 @@ def writeToCsv(service):
     cadence_fields = ['timestamp', 'cadence']
     heart_rate_fields = ['timestamp', 'heart_rate']
 
-    file_key = uuid.uuid4()
+    if service.recorded_data_cadence or service.recorded_data_heart_rate or service.recorded_data_speed:
+        file_key = uuid.uuid4()
 
-    with open(f'./public/{file_key}_speed.csv', 'w', newline='') as file: 
-        writer = csv.DictWriter(file, fieldnames = speed_fields)
-        writer.writeheader() 
-        if service.recorded_data_speed:
-            for row in service.recorded_data_speed:
-                speed = row['speed'] if row['speed'] else '0'
-                distance = row['distance'] if row['distance'] else '0'
-                writer.writerow({'timestamp': row['timestamp'], 'speed': speed, 'distance': distance})
+        with open(f'./public/{file_key}_speed.csv', 'w', newline='') as file: 
+            writer = csv.DictWriter(file, fieldnames = speed_fields)
+            writer.writeheader() 
+            if service.recorded_data_speed:
+                for row in service.recorded_data_speed:
+                    speed = row['speed'] if row['speed'] else '0'
+                    distance = row['distance'] if row['distance'] else '0'
+                    writer.writerow({'timestamp': row['timestamp'], 'speed': speed, 'distance': distance})
 
-    with open(f'./public/{file_key}_cadence.csv', 'w', newline='') as file: 
-        writer = csv.DictWriter(file, fieldnames = cadence_fields)
-        writer.writeheader() 
-        if service.recorded_data_cadence:
-            for row in service.recorded_data_cadence:
-                cadence = row['cadence'] if row['cadence'] else '0'
-                writer.writerow({'timestamp': row['timestamp'], 'cadence': cadence})
+        with open(f'./public/{file_key}_cadence.csv', 'w', newline='') as file: 
+            writer = csv.DictWriter(file, fieldnames = cadence_fields)
+            writer.writeheader() 
+            if service.recorded_data_cadence:
+                for row in service.recorded_data_cadence:
+                    cadence = row['cadence'] if row['cadence'] else '0'
+                    writer.writerow({'timestamp': row['timestamp'], 'cadence': cadence})
 
-    with open(f'./public/{file_key}_heart_rate.csv', 'w', newline='') as file: 
-        writer = csv.DictWriter(file, fieldnames = heart_rate_fields)
-        writer.writeheader() 
-        if service.recorded_data_heart_rate:
-            for row in service.recorded_data_heart_rate:
-                heart_rate = row['heart_rate'] if row['heart_rate'] else '0'
-                writer.writerow({'timestamp': row['timestamp'], 'heart_rate': heart_rate})
+        with open(f'./public/{file_key}_heart_rate.csv', 'w', newline='') as file: 
+            writer = csv.DictWriter(file, fieldnames = heart_rate_fields)
+            writer.writeheader() 
+            if service.recorded_data_heart_rate:
+                for row in service.recorded_data_heart_rate:
+                    heart_rate = row['heart_rate'] if row['heart_rate'] else '0'
+                    writer.writerow({'timestamp': row['timestamp'], 'heart_rate': heart_rate})
 
-    return file_key
+        return file_key
+    else:
+        return False
 
 
 class GeneralService:
@@ -129,17 +132,19 @@ def auto_scanner(file_path=None, device_id=0, device_type=0, auto_create=False):
 
     def handleRecordStop():
         file_key = writeToCsv(local_service)
-        data_dict = {
-            'uuid': str(file_key),
-            'action': 'statsReady'
-        }
 
-        # publish file_key to pubnub channel
-        try:
-            envelope = pubnub.publish().channel(PUBNUB_DEFAULT_CHANNEL).message(data_dict).sync()
-            # print("publish timetoken: %d" % envelope.result.timetoken)
-        except PubNubException as e:
-            print(e)
+        if file_key:
+            data_dict = {
+                'uuid': str(file_key),
+                'action': 'statsReady'
+            }
+
+            # publish file_key to pubnub channel
+            try:
+                envelope = pubnub.publish().channel(PUBNUB_DEFAULT_CHANNEL).message(data_dict).sync()
+                # print("publish timetoken: %d" % envelope.result.timetoken)
+            except PubNubException as e:
+                print(e)
 
         # clear the data lists
         local_service.clear()
